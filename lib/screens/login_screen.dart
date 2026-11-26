@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:monitor_sensores/screens/dashboard_screen.dart';
+import 'package:monitor_sensores/theme/app_colors.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -74,12 +75,12 @@ class _LoginScreenState extends State<LoginScreen> {
         _iniciarBloqueo();
         _mostrarSnackBar(
           'Demasiados intentos fallidos. Espera 30 segundos.',
-          Colors.red,
+          AppColors.danger,
         );
       } else {
         _mostrarSnackBar(
           'Credenciales incorrectas. Intento $_intentosFallidos/3.',
-          Colors.orange.shade800,
+          AppColors.warning,
         );
       }
     }
@@ -95,7 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
         if (mounted) {
           _mostrarSnackBar(
             'Autenticación biométrica no disponible en este dispositivo.',
-            Colors.orange.shade800,
+            AppColors.warning,
           );
         }
         return;
@@ -118,7 +119,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (mounted) {
         _mostrarSnackBar(
           'Error biométrico: ${e.message ?? "No disponible"}',
-          Colors.orange.shade800,
+          AppColors.warning,
         );
       }
     }
@@ -136,67 +137,79 @@ class _LoginScreenState extends State<LoginScreen> {
   void _mostrarSnackBar(String mensaje, Color color) {
     ScaffoldMessenger.of(context).removeCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(mensaje),
-        backgroundColor: color,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ),
+      SnackBar(content: Text(mensaje), backgroundColor: color),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade100,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 36),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 // ── Encabezado ──
-                CircleAvatar(
-                  radius: 40,
-                  backgroundColor: Colors.teal.shade100,
-                  child: Icon(
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    color: AppColors.surfaceLight,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.accent.withValues(alpha: 0.25),
+                        blurRadius: 24,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child: const Icon(
                     Icons.home_work_rounded,
-                    size: 42,
-                    color: Colors.teal.shade800,
+                    size: 40,
+                    color: AppColors.primaryDark,
                   ),
                 ),
-                const SizedBox(height: 16),
-                Text(
+                const SizedBox(height: 20),
+                const Text(
                   'Acceso Seguro — Hogar IoT',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.teal.shade900,
+                    fontSize: 24,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.primaryDark,
+                    letterSpacing: -0.3,
                   ),
                 ),
-                const SizedBox(height: 4),
-                Text(
+                const SizedBox(height: 6),
+                const Text(
                   'Control de seguridad y accesos',
                   style: TextStyle(
                     fontSize: 14,
-                    color: Colors.grey.shade600,
+                    color: AppColors.textSecondary,
                   ),
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 36),
 
                 // ── Tarjeta de formulario ──
-                Card(
-                  elevation: 3,
-                  color: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+                Container(
+                  decoration: BoxDecoration(
+                    color: AppColors.cardBg,
+                    borderRadius: BorderRadius.circular(24),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.06),
+                        blurRadius: 20,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
                   ),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 28,
+                      horizontal: 22,
+                      vertical: 30,
                     ),
                     child: Form(
                       key: _formKey,
@@ -206,12 +219,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           TextFormField(
                             controller: _usuarioController,
                             textInputAction: TextInputAction.next,
-                            decoration: InputDecoration(
-                              prefixIcon: const Icon(Icons.person_outline),
+                            decoration: const InputDecoration(
+                              prefixIcon: Icon(Icons.person_outline),
                               labelText: 'Nombre de usuario',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
                             ),
                             validator: (value) {
                               if (value == null || value.trim().isEmpty) {
@@ -235,14 +245,12 @@ class _LoginScreenState extends State<LoginScreen> {
                               prefixIcon: const Icon(Icons.lock_outline),
                               labelText: 'PIN de 4 dígitos',
                               counterText: '',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
                               suffixIcon: IconButton(
                                 icon: Icon(
                                   _ocultarPin
                                       ? Icons.visibility_off_outlined
                                       : Icons.visibility_outlined,
+                                  color: AppColors.textSecondary,
                                 ),
                                 onPressed: () {
                                   setState(() {
@@ -265,18 +273,24 @@ class _LoginScreenState extends State<LoginScreen> {
 
                           // Mensaje de bloqueo
                           if (_bloqueado)
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 8),
+                            Container(
+                              margin: const EdgeInsets.only(bottom: 8),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 10),
+                              decoration: BoxDecoration(
+                                color: AppColors.dangerLight,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
                               child: Row(
                                 children: [
                                   const Icon(Icons.warning_amber_rounded,
-                                      color: Colors.red, size: 20),
+                                      color: AppColors.danger, size: 20),
                                   const SizedBox(width: 8),
                                   Expanded(
                                     child: Text(
                                       'Acceso bloqueado. Intenta de nuevo en $_segundosRestantes s',
                                       style: const TextStyle(
-                                        color: Colors.red,
+                                        color: AppColors.danger,
                                         fontWeight: FontWeight.w600,
                                         fontSize: 13,
                                       ),
@@ -291,72 +305,64 @@ class _LoginScreenState extends State<LoginScreen> {
                           // Botón principal
                           SizedBox(
                             width: double.infinity,
-                            height: 48,
                             child: ElevatedButton(
                               onPressed: _bloqueado ? null : _intentarLogin,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.teal,
-                                foregroundColor: Colors.white,
-                                disabledBackgroundColor: Colors.grey.shade400,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              child: const Text(
-                                'Ingresar al Panel',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
+                              child: const Text('Ingresar al Panel'),
                             ),
                           ),
 
-                          const SizedBox(height: 20),
+                          const SizedBox(height: 24),
 
                           // Divisor "o ingresa con"
                           Row(
                             children: [
-                              Expanded(
-                                  child:
-                                      Divider(color: Colors.grey.shade300)),
+                              const Expanded(child: Divider()),
                               Padding(
                                 padding:
-                                    const EdgeInsets.symmetric(horizontal: 12),
+                                    const EdgeInsets.symmetric(horizontal: 14),
                                 child: Text(
                                   'o ingresa con',
                                   style: TextStyle(
-                                    color: Colors.grey.shade500,
+                                    color: AppColors.textSecondary
+                                        .withValues(alpha: 0.7),
                                     fontSize: 13,
                                   ),
                                 ),
                               ),
-                              Expanded(
-                                  child:
-                                      Divider(color: Colors.grey.shade300)),
+                              const Expanded(child: Divider()),
                             ],
                           ),
 
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 18),
 
                           // Botón biometría
-                          IconButton(
-                            onPressed:
-                                _bloqueado ? null : _autenticarBiometria,
-                            icon: Icon(
-                              Icons.fingerprint,
-                              size: 36,
-                              color: _bloqueado
-                                  ? Colors.grey.shade400
-                                  : Colors.teal.shade700,
+                          Container(
+                            decoration: BoxDecoration(
+                              color: AppColors.surfaceLight
+                                  .withValues(alpha: 0.5),
+                              shape: BoxShape.circle,
                             ),
-                            tooltip: 'Autenticación biométrica',
+                            child: IconButton(
+                              onPressed:
+                                  _bloqueado ? null : _autenticarBiometria,
+                              iconSize: 36,
+                              padding: const EdgeInsets.all(14),
+                              icon: Icon(
+                                Icons.fingerprint,
+                                color: _bloqueado
+                                    ? AppColors.textSecondary
+                                        .withValues(alpha: 0.3)
+                                    : AppColors.primaryDark,
+                              ),
+                              tooltip: 'Autenticación biométrica',
+                            ),
                           ),
-                          Text(
+                          const SizedBox(height: 4),
+                          const Text(
                             'Huella digital',
                             style: TextStyle(
                               fontSize: 12,
-                              color: Colors.grey.shade500,
+                              color: AppColors.textSecondary,
                             ),
                           ),
                         ],

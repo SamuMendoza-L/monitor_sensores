@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:monitor_sensores/screens/login_screen.dart';
+import 'package:monitor_sensores/theme/app_theme.dart';
 
 void main() {
   runApp(const MonitorSensoresApp());
@@ -13,10 +14,7 @@ class MonitorSensoresApp extends StatelessWidget {
     return MaterialApp(
       title: 'Monitor IoT Hogar',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
-        useMaterial3: true,
-      ),
+      theme: AppTheme.light,
       home: const LoginScreen(),
     );
   }
